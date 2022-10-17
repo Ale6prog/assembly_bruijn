@@ -15,6 +15,7 @@
 
 import argparse
 import os
+from socket import CAN_BCM_CAN_FD_FRAME
 import sys
 import networkx as nx
 import matplotlib
@@ -73,20 +74,37 @@ def read_fastq(fastq_file):
     with open(fastq_file)as f:
         lines = f.readlines()
         for i in range(1,len(lines),4):
-            print(lines[i])
+            yield lines[i].strip()
 
 
 
 def cut_kmer(read, kmer_size):
-    pass
+    flag_start = 0
+    flag_end = kmer_size
+    while flag_end <= len(read):
+        yield(read[flag_start:flag_end])
+        flag_start = flag_start+1
+        flag_end = flag_end + 1
 
 
 def build_kmer_dict(fastq_file, kmer_size):
-    pass
+    memoire = {}
+    file = read_fastq(fastq_file)
+    for read in file:
+        kmer = cut_kmer(read, kmer_size)
+        for k in kmer:
+            if k not in memoire.keys():
+                memoire[k] = 1
+            else:
+                memoire[k] += 1
+    return memoire
+
 
 
 def build_graph(kmer_dict):
-    pass
+    val = list(kmer_dict.values())
+    for i in range(len(kmer_dict.keys())-1):
+        nx.digraph.add_edge(val[i], val[i+1] [, weight] )
 
 
 def remove_paths(graph, path_list, delete_entry_node, delete_sink_node):
@@ -126,6 +144,7 @@ def get_contigs(graph, starting_nodes, ending_nodes):
 
 def save_contigs(contigs_list, output_file):
     pass
+
 
 
 def fill(text, width=80):
@@ -168,7 +187,7 @@ def main():
     """
     # Get arguments
     args = get_arguments()
-    read_fastq(args.fastq_file)
+    build_graph(build_kmer_dict(args.fastq_file,args.kmer_size))
     # Fonctions de dessin du graphe
     # A decommenter si vous souhaitez visualiser un petit 
     # graphe
