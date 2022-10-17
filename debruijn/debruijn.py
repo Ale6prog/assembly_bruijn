@@ -70,7 +70,11 @@ def get_arguments():
 
 
 def read_fastq(fastq_file):
-    pass
+    with open(fastq_file)as f:
+        lines = f.readlines()
+        for i in range(1,len(lines),4):
+            print(lines[i])
+
 
 
 def cut_kmer(read, kmer_size):
@@ -164,7 +168,7 @@ def main():
     """
     # Get arguments
     args = get_arguments()
-
+    read_fastq(args.fastq_file)
     # Fonctions de dessin du graphe
     # A decommenter si vous souhaitez visualiser un petit 
     # graphe
