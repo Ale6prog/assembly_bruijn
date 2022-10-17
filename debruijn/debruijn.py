@@ -102,10 +102,10 @@ def build_kmer_dict(fastq_file, kmer_size):
 
 
 def build_graph(kmer_dict):
-    val = list(kmer_dict.values())
-    for i in range(len(kmer_dict.keys())-1):
-        nx.digraph.add_edge(val[i], val[i+1] [, weight] )
-
+    g = nx.DiGraph()
+    for k,i in kmer_dict.items():
+        g.add_edge(k[:-1], k[1:],weight = i)
+    return g
 
 def remove_paths(graph, path_list, delete_entry_node, delete_sink_node):
     pass
@@ -150,7 +150,7 @@ def save_contigs(contigs_list, output_file):
 def fill(text, width=80):
     """Split text with a line return to respect fasta format"""
     return os.linesep.join(text[i:i+width] for i in range(0, len(text), width))
-
+    
 def draw_graph(graph, graphimg_file):
     """Draw the graph
     """                                    
