@@ -124,26 +124,19 @@ def std(data):
 
 def select_best_path(graph, path_list, path_length, weight_avg_list, 
                      delete_entry_node=False, delete_sink_node=False):
-    max_weight = max(mean_weights)
-    heaviest = [i for i, j in enumerate(mean_weights) if j == max_weight]
-    if len(heaviest) > 1:
-        max_len = max(path_lens)
-        longest = [i for i in heaviest if path_lens[i] == max_len]
-        if len(longest) > 1:
-            Random.seed(9001)
-            best = random.choice[longest]
+    max_weight = max(weight_avg_list)
+    lourd = path_list[path_list.index(max_weight)]
+    if len(lourd) > 1:
+        max_len = max(path_length)
+        long = path_list[path_list.index(max_len)]
+        if len(long) > 1:
+            super = long[randint(len(long))]
         else:
-            best = longest[0]
+            super = long[0]
     else:
-        best = heaviest[0]
-    
-    for p in paths:
-        print(p)
+        super = lourd[0]
+    return super
 
-    paths2 = [p for p in paths]
-    paths2.pop(best)
-
-    return remove_paths(graph, paths2, delete_entry_node, delete_sink_node)
 
 
 
@@ -160,10 +153,38 @@ def path_average_weight(graph, path):
 
 
 def solve_bubble(graph, ancestor_node, descendant_node):
-    pass
+    path_list = nx.all_simple_paths(graph, ancestor_node, descendant_node)
+    memoire= []
+    poids = []
+    taille_chemin = []
+    for chemin in path_list:
+        memoire.append(chemin)
+
+    for chemin in memoire:
+        poids.append(path_average_weight(graph, chemin))
+        taille_chemin.append(len(chemin))
+
+    return select_best_path(graph, memoire, poids, taille_chemin)
+
+
+
 
 def simplify_bubbles(graph):
-    pass
+    memoire = []
+    flag = 1
+    while flag == 1: 
+        for node in graph:
+            if graph.in_degree(node) >= 2:
+                pred = []
+                for n in graph.predecessors(node):
+                    pred.append(n)
+                if len(pred) > 1:
+                    flag = 1
+                else:
+                    flag = 0
+                ancestor = nx.lowest_common_ancestor(graph,pred[0], pred[1])
+                graph = solve_bubble(graph, ancestor, node)
+    return graph
 
 def solve_entry_tips(graph, starting_nodes):
     pass
