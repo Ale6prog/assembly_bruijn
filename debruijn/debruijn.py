@@ -104,7 +104,7 @@ def build_kmer_dict(fastq_file, kmer_size):
 def build_graph(kmer_dict):
     g = nx.DiGraph()
     for k,i in kmer_dict.items():
-        g.add_edge(k[:-1], k[1:],weight = i)
+        g.add_edge(k[:-1], k[1:], weight = i)
     return g
 
 def remove_paths(graph, path_list, delete_entry_node, delete_sink_node):
@@ -134,16 +134,36 @@ def solve_out_tips(graph, ending_nodes):
     pass
 
 def get_starting_nodes(graph):
-    pass
+    memoire= []
+    for node in graph.nodes():
+        if(len(list(graph.predecessors(node)))== 0):
+            memoire.append(node)
+    return(memoire)
 
-def get_sink_nodes(graph):
-    pass
+def get_sink_nodes(graph):  
+    memoire= []
+    for node in graph.nodes():
+        if(len(list(graph.successors(node)))== 0):
+            memoire.append(node)
+    return(memoire)
 
 def get_contigs(graph, starting_nodes, ending_nodes):
-    pass
+    memoire = []
+    for entre in starting_nodes:
+        for sortie in ending_nodes:
+            if(nx.has_path(graph, entre, sortie)):
+                az = nx.all_simple_paths(graph, entre, sortie)
+                for t in az:
+                    contig = "".join(t[::len(t[0])])
+                    memoire.append((contig, len(contig)))
+    return memoire
 
 def save_contigs(contigs_list, output_file):
-    pass
+    with open(output_file, "w") as f:
+        for i,typl in enumerate(contigs_list):
+            f.write(f">contig_{i} len={typl[1]}\n")
+            f.write(fill(typl[0]))
+            f.write("\n")
 
 
 
@@ -187,7 +207,11 @@ def main():
     """
     # Get arguments
     args = get_arguments()
-    build_graph(build_kmer_dict(args.fastq_file,args.kmer_size))
+    g = build_graph(build_kmer_dict(args.fastq_file,args.kmer_size))
+    start = get_starting_nodes(g)
+    end = get_sink_nodes(g)
+    contig = get_contigs(g, start, end)
+    save_contigs(contig, args.output_file)
     # Fonctions de dessin du graphe
     # A decommenter si vous souhaitez visualiser un petit 
     # graphe
