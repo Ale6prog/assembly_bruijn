@@ -108,18 +108,56 @@ def build_graph(kmer_dict):
     return g
 
 def remove_paths(graph, path_list, delete_entry_node, delete_sink_node):
-    pass
+    entre, sortie = 1, None
+    if delete_entry_node == True:
+        entre = 0
+    if delete_sink_node == False:
+        sortie = -1
+    for chemin in path_list:
+        graph.remove_nodes_from(chemin[entre:sortie]) 
+    return graph
+
 
 def std(data):
-    pass
+    return statistics.stdev(data)   
 
 
 def select_best_path(graph, path_list, path_length, weight_avg_list, 
                      delete_entry_node=False, delete_sink_node=False):
-    pass
+    max_weight = max(mean_weights)
+    heaviest = [i for i, j in enumerate(mean_weights) if j == max_weight]
+    if len(heaviest) > 1:
+        max_len = max(path_lens)
+        longest = [i for i in heaviest if path_lens[i] == max_len]
+        if len(longest) > 1:
+            Random.seed(9001)
+            best = random.choice[longest]
+        else:
+            best = longest[0]
+    else:
+        best = heaviest[0]
+    
+    for p in paths:
+        print(p)
+
+    paths2 = [p for p in paths]
+    paths2.pop(best)
+
+    return remove_paths(graph, paths2, delete_entry_node, delete_sink_node)
+
+
+
 
 def path_average_weight(graph, path):
-    pass
+    route = graph.subgraph(path).edges(data=True)
+    poids = 0
+
+    for chemin in route:
+        poids += chemin[2]["weight"]
+
+    poids = poids/(len(path)-1)
+    return poids
+
 
 def solve_bubble(graph, ancestor_node, descendant_node):
     pass
@@ -211,7 +249,6 @@ def main():
     start = get_starting_nodes(g)
     end = get_sink_nodes(g)
     contig = get_contigs(g, start, end)
-    save_contigs(contig, args.output_file)
     # Fonctions de dessin du graphe
     # A decommenter si vous souhaitez visualiser un petit 
     # graphe
