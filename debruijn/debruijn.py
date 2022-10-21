@@ -205,19 +205,19 @@ def simplify_bubbles(graph):
 def solve_entry_tips(graph, starting_nodes):
     """ Solve all the entry tips of the graph.
     """
-    print(starting_nodes)
     n_list = []
 
     if len(starting_nodes) > 2:
         n_list = [(starting_nodes[n_i], starting_nodes[n_j]) for n_i in range(len(starting_nodes)) for n_j
                   in range(n_i+1, len(starting_nodes))]
-    else:
+    elif len(starting_nodes) == 2:
         n_list = [tuple(starting_nodes)]
+    else:
+        return  graph
 
     a_list = []
 
     for node in n_list:
-        print(node)
         a_list.append([nx.lowest_common_ancestor(graph.reverse(),
                        node[0], node[1])])
 
@@ -248,8 +248,10 @@ def solve_out_tips(graph, ending_nodes):
 
     if len(ending_nodes) > 2:
         n_list = [(n_i, n_j) for n_i in ending_nodes for n_j in ending_nodes]
-    else:
+    elif len(ending_nodes) == 2:
         n_list = [tuple(ending_nodes)]
+    else:
+        return graph
 
     a_list = []
 
@@ -309,7 +311,7 @@ def save_contigs(contigs_list, output_file):
     """
     with open(output_file, "w", encoding="UTF-8") as file:
         for i, typl in enumerate(contigs_list):
-            file.write(f">contig_{i} len={typl[1]}\n")
+            file.write(f">contig_{i+1} len={typl[1]}\n")
             file.write(f"{fill(typl[0])}\n")
 
 
@@ -324,10 +326,8 @@ def draw_graph(graph, graphimg_file):
     """
     elarge = [(u, v) for (u, v, d) in graph.edges(data=True) if d['weight']
               > 3]
-    print(elarge)
     esmall = [(u, v) for (u, v, d) in graph.edges(data=True) if d['weight']
               <= 3]
-    print(elarge)
     # Draw the graph with networkx
     pos = nx.spring_layout(graph)
     pos = nx.random_layout(graph)
